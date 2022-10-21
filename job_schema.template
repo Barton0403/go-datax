@@ -1,0 +1,51 @@
+{
+    "job": {
+        "setting": {
+            "speed": {
+                "channel": 2
+            },
+            "errorLimit": {
+                "record": 0,
+                "percentage": 0.02
+            }
+        },
+        "content": [
+            {
+                "reader": {
+                    "name": "mysqlreader",
+                    "parameter": {
+                        "username": "{{.SourceDb.Username}}",
+                        "password": "{{.SourceDb.Password}}",
+                        "column" : ["`{{join .ColumnNames "`\",\"`"}}`"],
+                        "splitPk": "{{.Pk}}",
+                        "connection": [
+                            {
+                                "table": [
+                                    "{{.TableName}}"
+                                ],
+                                "jdbcUrl": ["{{.SourceJdbcUrl}}"]
+                            }
+                        ]
+                    }
+                },
+                "writer": {
+                    "name": "mysqlwriter",
+                    "parameter": {
+                        "writeMode": "replace",
+                        "username": "{{.TargetDb.Username}}",
+                        "password": "{{.TargetDb.Password}}",
+                        "column" : ["`{{join .ColumnNames "`\",\"`"}}`"],
+                        "connection": [
+                            {
+                                "jdbcUrl": "{{.TargetJdbcUrl}}",
+                                "table": [
+                                    "{{.TableName}}"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+    }
+}
