@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"regexp"
 	"runtime"
 	"strings"
 	"text/template"
@@ -352,6 +353,11 @@ func main() {
 		if runCmd.Arg(0) == "all" {
 			files, _ := GetAllFile("./" + outdir)
 			for _, file := range files {
+				f, _ := regexp.MatchString(`\.json$`, file)
+				if !f {
+					continue
+				}
+
 				args := buildJavaArgs(file)
 				c := exec.Command("java", args...)
 				c.Stdout = os.Stdout
