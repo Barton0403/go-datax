@@ -1,0 +1,3 @@
+increment_tables:
+  user: # 表名
+    where: "update_date>='%s' and update_date<'%s'"

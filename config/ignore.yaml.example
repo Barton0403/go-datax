@@ -1,0 +1,2 @@
+ignore_tables:
+  - log # 忽略的表名

@@ -1,18 +1,17 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"database/sql"
 	"flag"
 	"fmt"
+	"github.com/Barton0403/go-datax/common"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/spf13/viper"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"regexp"
-	"runtime"
 	"strings"
 	"text/template"
 )
@@ -192,43 +191,7 @@ var (
 	runCmd *flag.FlagSet
 	jobId  int
 	mode   string
-
-	defaultJvm    string
-	engineCommand string
 )
-
-type JavaCommandMap struct {
-	Jvm    string
-	Params string
-	Mode   string
-	JobId  int
-	Job    string
-}
-
-func buildJavaArgs(jobFilename string) []string {
-	jvm := defaultJvm
-
-	start := 0
-	if len(jobFilename) > 20 {
-		start = len(jobFilename) - 20
-	}
-	t := strings.Replace(jobFilename[start:], "/", "_", -1)
-	t = strings.Replace(t, ".", "_", -1)
-	jobParams := fmt.Sprintf("-Dlog.file.name=%s", t)
-
-	commandMap := JavaCommandMap{
-		Jvm:    jvm,
-		Job:    jobFilename,
-		Params: jobParams,
-		JobId:  jobId,
-		Mode:   mode,
-	}
-	tmpl, _ := template.New("command").Parse(engineCommand)
-	buf := new(bytes.Buffer)
-	tmpl.Execute(buf, commandMap)
-
-	return strings.Split(buf.String(), " ")
-}
 
 func GetAllFile(pathname string) (s []string, err error) {
 	rd, err := ioutil.ReadDir(pathname)
@@ -282,22 +245,6 @@ The arguments are:
 }
 
 func main() {
-	pwd, _ := os.Getwd()
-	dataxHome := pwd + "/datax"
-	var classPath string
-	if runtime.GOOS == "windows" {
-		//python codecs.register(lambda name: name == 'cp65001' and codecs.lookup('utf-8') or None)
-		classPath = fmt.Sprintf("%s/lib/*", dataxHome)
-	} else {
-		classPath = fmt.Sprintf("%s/lib/*:.", dataxHome)
-	}
-	logbackFile := fmt.Sprintf("%s/conf/logback.xml", dataxHome)
-	defaultJvm = fmt.Sprintf("-Xms1g -Xmx1g -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=%s/log", dataxHome)
-	defaultPropertyConf := fmt.Sprintf("-Dfile.encoding=UTF-8 -Dlogback.statusListenerClass=ch.qos.logback.core.status.NopStatusListener -Djava.security.egd=file:///dev/urandom -Ddatax.home=%s -Dlogback.configurationFile=%s",
-		dataxHome, logbackFile)
-	engineCommand = fmt.Sprintf("-server {{.Jvm}} %s -classpath %s {{.Params}} com.alibaba.datax.core.Engine -mode {{.Mode}} -jobid {{.JobId}} -job {{.Job}}",
-		defaultPropertyConf, classPath)
-
 	if len(os.Args) < 2 {
 		fmt.Println("expected 'generate' or 'run' subcommands")
 		return
@@ -358,7 +305,7 @@ func main() {
 					continue
 				}
 
-				args := buildJavaArgs(file)
+				args := common.BuildJavaArgs(file, jobId, mode)
 				c := exec.Command("java", args...)
 				c.Stdout = os.Stdout
 				c.Stderr = os.Stderr
@@ -368,7 +315,7 @@ func main() {
 				}
 			}
 		} else {
-			args := buildJavaArgs(runCmd.Arg(0))
+			args := common.BuildJavaArgs(runCmd.Arg(0), jobId, mode)
 			c := exec.Command("java", args...)
 			c.Stdout = os.Stdout
 			c.Stderr = os.Stderr

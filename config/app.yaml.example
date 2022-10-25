@@ -1,0 +1,19 @@
+source_db:
+  database: source # 源数据库名
+  username: root
+  password: root
+  host: 127.0.0.1
+  port: 3306
+
+target_db:
+  database: target # 目标数据库名
+  username: root
+  password: root
+  host: 127.0.0.1
+  port: 3306
+
+mq:
+  host: rabbitmq
+  port: 5672
+  username: root
+  password: root
