@@ -3,7 +3,6 @@ package common
 import (
 	"bytes"
 	"fmt"
-	"os"
 	"runtime"
 	"strings"
 	"text/template"
@@ -14,9 +13,7 @@ var (
 	engineCommand string
 )
 
-func init() {
-	pwd, _ := os.Getwd()
-	dataxHome := pwd + "/datax"
+func CommandInit(dataxHome string) {
 	var classPath string
 	if runtime.GOOS == "windows" {
 		//python codecs.register(lambda name: name == 'cp65001' and codecs.lookup('utf-8') or None)

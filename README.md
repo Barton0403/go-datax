@@ -8,7 +8,7 @@
 
 # Quick Start
 ## 下载[Datax](https://datax-opensource.oss-cn-hangzhou.aliyuncs.com/202209/datax.tar.gz)
-下载[Datax](https://datax-opensource.oss-cn-hangzhou.aliyuncs.com/202209/datax.tar.gz)解压到到根目录
+下载[Datax](https://datax-opensource.oss-cn-hangzhou.aliyuncs.com/202209/datax.tar.gz)解压到`/usr/lib/datax`目录
 ## 配置
 config/app.yaml
 ```
@@ -29,8 +29,12 @@ target_db:
 ## 生成Job文件
 ```
 go run . generate
+// or
+bin/go-datax generate
 ```
 ## 同步数据
 ```
 go run . run all
+// or
+bin/go-datax all
 ```

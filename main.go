@@ -182,6 +182,7 @@ var (
 	increment   bool
 	startDate   string
 	endDate     string
+	dataxHome   string
 
 	sourceDb        Db
 	targetDb        Db
@@ -225,6 +226,7 @@ The commands are:
 	generateCmd.StringVar(&startDate, "startdate", "", "increment start date")
 	generateCmd.StringVar(&endDate, "enddate", "", "increment end date")
 	generateCmd.BoolVar(&help, "help", false, "this help")
+	generateCmd.StringVar(&dataxHome, "dataxdir", "/usr/lib/datax", "datax dir")
 	generateCmd.Usage = func() {
 		fmt.Fprintf(os.Stderr, `Usage: go-datax generate [arguments]
 The arguments are:
@@ -236,12 +238,15 @@ The arguments are:
 	runCmd.StringVar(&mode, "mode", "standalone", "Set job runtime mode such as: standalone, local, distribute. Default mode is standalone.")
 	runCmd.StringVar(&outdir, "jobdir", "job", "Job file dir when run all")
 	runCmd.BoolVar(&help, "help", false, "this help")
+	runCmd.StringVar(&dataxHome, "dataxdir", "/usr/lib/datax", "datax dir")
 	runCmd.Usage = func() {
 		fmt.Fprintf(os.Stderr, `Usage: go-datax run [arguments]
 The arguments are:
 `)
 		runCmd.PrintDefaults()
 	}
+
+	common.CommandInit(dataxHome)
 }
 
 func main() {
